@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Shtickle-app",
-    "slug": "Shtickle-app",
-    "version": "1.0.0",
+    "name": "Shtickle",
+    "slug": "Shtickle",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -18,16 +18,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jacobboim.shtickleApp",
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.jacobboim.shtickleApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "832e5bc3-282e-4c63-bcd4-8390fe46d6d1"
+      }
     }
   }
 }

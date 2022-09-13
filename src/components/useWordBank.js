@@ -138,6 +138,8 @@ const useWordBank = () => {
       "chevra",
       "cohen",
       "davka",
+      "bachur",
+      "macher",
     ];
     // return words[Math.floor(Math.random() * words.length)];
     return Math.floor(Math.random() * words.length);
@@ -163,6 +165,7 @@ const useWordBank = () => {
     "zemer",
     "keter",
     "kotel",
+    "bachur",
     "sfard",
     "licht",
     "shteig",

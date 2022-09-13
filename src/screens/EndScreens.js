@@ -472,7 +472,10 @@ const EndScreens = ({
       </Animated.View>
       {/* <Button title="Play Again!" onPress={handleNewGame} color="white" /> */}
 
-      <View style={{ alignItems: "center", marginTop: 150 }}>
+      <Animated.View
+        entering={SlideInLeft.delay(360).springify().mass(0.5)}
+        style={{ alignItems: "center", marginTop: 150 }}
+      >
         <Text style={{ color: colors.lightgrey }}>Next Shtickle</Text>
         <Text
           style={{
@@ -511,7 +514,7 @@ const EndScreens = ({
             Play Again!
           </Text>
         </Pressable>
-      </View>
+      </Animated.View>
     </SafeAreaView>
   );
 };
