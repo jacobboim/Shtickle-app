@@ -10,6 +10,7 @@ const Keyboard = ({
   greenCaps = [],
   yellowCaps = [],
   greyCaps = [],
+  pressedKey = "",
 }) => {
   const isLongButton = (key) => {
     return key === ENTER || key === CLEAR;
@@ -29,6 +30,8 @@ const Keyboard = ({
     return theme.keyBoardLetterColor;
   };
 
+  const [keyDown, setKeyDown] = useState("");
+
   return (
     <Animated.View
       entering={SlideInDown.duration(1300).springify().mass(0.5)}
@@ -36,18 +39,31 @@ const Keyboard = ({
     >
       {keys.map((keyRow, i) => (
         <View style={styles.row} key={`row-${i}`}>
-          {keyRow.map((key) => (
+          {keyRow.map((key, index) => (
             <Pressable
               onPress={() => onKeyPressed(key)}
-              //   disabled={greyCaps.includes(key)}
+              onTouchStart={() => setKeyDown(key)}
+              onTouchEnd={() => setKeyDown("")}
               key={key}
               style={[
                 [styles.key, { backgroundColor: theme.keyBackgroundColor }],
                 isLongButton(key) ? { width: keyWidth * 1.4 } : {},
-                { backgroundColor: getKeyBGColor(key) },
+                {
+                  // backgroundColor: getKeyBGColor(key),
+                  backgroundColor:
+                    key === keyDown ? "#B6BAC2" : getKeyBGColor(key),
+                },
               ]}
             >
-              <Text style={[styles.keyText, { color: theme.keyLetterColor }]}>
+              <Text
+                style={[
+                  styles.keyText,
+                  {
+                    color: theme.keyLetterColor,
+                  },
+                ]}
+              >
+                {console.log(keyDown, "this is keu down")}
                 {key.toUpperCase()}
               </Text>
             </Pressable>

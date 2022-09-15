@@ -73,6 +73,7 @@ const Game = () => {
   const [history, setHistory] = useState([]); // each guess is a string
   const [newGamePressesed, setNewGamePressesed] = useState(false);
   const [emailPress, setEmailPress] = useState(false);
+
   const [rows, setRows] = useState(
     new Array(NUMBER_OF_TRIES).fill(new Array(0).fill(""))
   );
@@ -273,6 +274,8 @@ const Game = () => {
       setRows(updatedRows);
       setCurCol(curCol + 1);
     }
+
+    console.log(key, " this is the key");
   };
 
   const isCellActive = (row, col) => {
@@ -381,7 +384,6 @@ const Game = () => {
           color={theme.info}
           onPress={() => setModalVisible(true)}
         />
-        {/* <Text style={[styles.title, { color: theme.title }]}>SHTICKLE</Text> */}
         <Image
           source={ICONS.shticklePng}
           style={{
@@ -617,7 +619,7 @@ const Game = () => {
               flexDirection: "row",
               height: 65,
               width: "50%",
-              marginTop: 30,
+              marginTop: "70%",
             }}
           >
             <Text
