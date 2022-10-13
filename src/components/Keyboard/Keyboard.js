@@ -63,7 +63,7 @@ const Keyboard = ({
                   },
                 ]}
               >
-                {console.log(keyDown, "this is keu down")}
+                {/* {console.log(keyDown, "this is keu down")} */}
                 {key.toUpperCase()}
               </Text>
             </Pressable>

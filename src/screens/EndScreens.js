@@ -74,6 +74,7 @@ const EndScreens = ({
   getCellBGColor,
   changeGameState,
   onRestart,
+  empojiListForShare,
   navigation,
   solution,
   // showToast,
@@ -95,12 +96,13 @@ const EndScreens = ({
   }, [changeGameState]);
 
   const onShare = async () => {
-    const textMap = rows
-      .map((row, i) =>
-        row.map((cell, j) => colorsToEmoji[getCellBGColor(i, j)]).join("")
-      )
-      .filter((row) => row)
-      .join("\n");
+    // const textMap = rows
+    //   .map((row, i) =>
+    //     row.map((cell, j) => colorsToEmoji[getCellBGColor(i, j)]).join("")
+    //   )
+    //   .filter((row) => row)
+    //   .join("\n");
+    const textMap = empojiListForShare;
     const getRowLength = rows.map((row) => row.length);
     const getIndexZero = getRowLength[0];
 
@@ -109,20 +111,22 @@ const EndScreens = ({
         return `${textMap} \n🟩🟩🟩🟩🟩🟩 `;
       } else if (getIndexZero === 5 && won === true) {
         return `${textMap} \n🟩🟩🟩🟩🟩 `;
+      } else if (getIndexZero === 6 && won !== "won") {
+        return `${textMap} \n⬛⬛⬛⬛⬛⬛ `;
+      } else if (getIndexZero === 5 && won !== "won") {
+        return `${textMap} \n⬛⬛⬛⬛⬛ `;
       } else {
         return `${textMap}`;
       }
     };
 
-    const addGreen = `${textMap} \n 🟩🟩🟩🟩🟩🟩 `;
-
-    console.log(changeText(), "textMap");
+    // console.log(changeText(), "textMap");
     try {
       const result = await Share.share({
         message: `Shtickle results for the word: ${lastWord} \n ${changeText()}`,
         url: changeText(),
-        // url: 'https://www.google.com/',
-        // message: 'go to google',
+        // message: `Shtickle results for the word: ${lastWord} \n ${empojiListForShare}`,
+        // url: empojiListForShare,
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {

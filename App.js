@@ -22,6 +22,7 @@ import { EventRegister } from "react-native-event-listeners";
 import themeContext from "./src/config/themeContext";
 import theme from "./src/config/theme";
 import Toast, { SuccessToast, ErrorToast } from "react-native-toast-message";
+import * as SplashScreen from "expo-splash-screen";
 
 const styles = StyleSheet.create({
   container: {
@@ -57,6 +58,19 @@ const App = () => {
       EventRegister.removeEventListener(eventListener);
     };
   });
+  useEffect(() => {
+    const prepare = async () => {
+      // keep splash screen visible
+      await SplashScreen.preventAutoHideAsync();
+
+      // pre-load your stuff
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // hide splash screen
+      await SplashScreen.hideAsync();
+    };
+    prepare();
+  }, []);
 
   const toastConfig = {
     success: (props) => (

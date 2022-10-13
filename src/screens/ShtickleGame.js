@@ -73,6 +73,7 @@ const Game = () => {
   const [history, setHistory] = useState([]); // each guess is a string
   const [newGamePressesed, setNewGamePressesed] = useState(false);
   const [emailPress, setEmailPress] = useState(false);
+  const [emptyEmojiList, setEmptyEmojiList] = useState(null);
 
   const [rows, setRows] = useState(
     new Array(NUMBER_OF_TRIES).fill(new Array(0).fill(""))
@@ -133,6 +134,7 @@ const Game = () => {
     setGameState("playing");
     setCurRow(0);
     setCurCol(0);
+    setHistory([]);
 
     // setRandomNum(getNewWord);
     setRows(
@@ -224,6 +226,7 @@ const Game = () => {
     if (gameState !== "playing") {
       return;
     }
+    share();
 
     const updatedRows = copyArray(rows);
 
@@ -299,6 +302,19 @@ const Game = () => {
     return theme.darkgrey;
   };
 
+  const share = () => {
+    const textMap = rows
+      .map((row, i) =>
+        row.map((cell, j) => colorsToEmoji[getCellBGColor(i, j)]).join("")
+      )
+      .filter((row) => row)
+      .join("\n");
+
+    setEmptyEmojiList(textMap);
+
+    console.log(textMap, "this is the emokji map");
+  };
+
   const getAllLettersWithColor = (color) => {
     return rows.flatMap((row, i) =>
       row.filter((cell, j) => getCellBGColor(i, j) === color)
@@ -359,6 +375,7 @@ const Game = () => {
         getCellBGColor={getCellBGColor}
         changeGameState={(gameState) => setGameState(gameState)}
         solution={word}
+        empojiListForShare={emptyEmojiList}
         // showToast={showToast}
       />
     );
@@ -394,37 +411,6 @@ const Game = () => {
           }}
         />
 
-        {/* <AnimatedNative.Text
-          entering={SlideInLeft.delay(500)}
-          style={[
-            styles.title,
-            {
-              color: theme.title,
-              transform: [
-                // { translateX: translation },
-                {
-                  rotate: translation.interpolate({
-                    inputRange: [0, 10],
-                    outputRange: ["0deg", "360deg"],
-                  }),
-                },
-              ],
-            },
-          ]}
-        > */}
-        {/* SHTICKLE */}
-        {/* </AnimatedNative.Text> */}
-        {/* <Switch
-          // style={{ padding÷Left: "0%" }}
-          value={mode}
-          trackColor={{ false: "white", true: "lightgreen" }}
-          thumbColor={mode ? "white" : "black"}
-          ios_backgroundColor="lightgreen"
-          onValueChange={(value) => {
-            setMode(value);
-            EventRegister.emit("changeTheme", value);
-          }}
-        /> */}
         <Pressable
           onPress={() => {
             setMode(!mode);
