@@ -2,7 +2,7 @@
   "expo": {
     "name": "Shtickle",
     "slug": "Shtickle",
-    "version": "1.0.4",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -12,13 +12,16 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/832e5bc3-282e-4c63-bcd4-8390fe46d6d1"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jacobboim.shtickleApp",
-      "buildNumber": "5"
+      "buildNumber": "7"
     },
     "android": {
       "adaptiveIcon": {
@@ -34,6 +37,7 @@
       "eas": {
         "projectId": "832e5bc3-282e-4c63-bcd4-8390fe46d6d1"
       }
-    }
+    },
+    "runtimeVersion": "1.0.0"
   }
 }

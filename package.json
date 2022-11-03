@@ -1,6 +1,6 @@
 {
   "name": "shtickle-app",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
