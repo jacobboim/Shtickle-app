@@ -16,6 +16,23 @@ export default StyleSheet.create({
     justifyContent: "center",
   },
   key: {
+    // width: keyWidth - 4,
+    // height: keyHeight - 4,
+    width: 85,
+    height: 85,
+    margin: 2,
+    borderRadius: 5,
+    // backgroundColor: colors.grey,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  keyText: {
+    // color: colors.lightgrey,
+    fontWeight: "bold",
+    fontSize: 25,
+    textAlign: "center",
+  },
+  keyIphone: {
     width: keyWidth - 4,
     height: keyHeight - 4,
     margin: 2,
@@ -24,7 +41,7 @@ export default StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  keyText: {
+  keyTextIphone: {
     // color: colors.lightgrey,
     fontWeight: "bold",
   },

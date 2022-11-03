@@ -1,6 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 
 import { StyleSheet, Text, View, Button, Image } from "react-native";
+import "@expo/match-media";
+import { useMediaQuery } from "react-responsive";
 
 import { useEffect, useState } from "react";
 import { AppRegistry } from "react-native";

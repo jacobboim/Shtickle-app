@@ -24,7 +24,18 @@ export default StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-  cell: {
+  cellIpad: {
+    flex: 1,
+    aspectRatio: 1,
+    borderWidth: 2,
+    margin: 3,
+    borderColor: colors.darkgrey,
+    maxWidth: 140,
+    maxHeight: 125,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cellIPhone: {
     flex: 1,
     aspectRatio: 1,
     borderWidth: 2,
@@ -49,7 +60,22 @@ export default StyleSheet.create({
     marginTop: 0,
   },
 
-  modalCell: {
+  modalCellIpad: {
+    // aspectRatio: 1,
+    borderWidth: 2,
+    margin: 3,
+    marginTop: 30,
+    borderColor: colors.darkgrey,
+    width: "15%",
+    justifyContent: "center",
+    alignItems: "center",
+    display: "flex",
+    textAlign: "center",
+    fontSize: 20,
+    padding: 15,
+  },
+
+  modalCellIpone: {
     // aspectRatio: 1,
     borderWidth: 2,
     margin: 3,
@@ -64,7 +90,24 @@ export default StyleSheet.create({
     padding: 3,
   },
 
-  modalCellCorrect: {
+  modalCellCorrectIpad: {
+    // aspectRatio: 1,
+    borderWidth: 2,
+    margin: 3,
+    marginTop: 30,
+    borderColor: colors.darkgrey,
+    width: "15%",
+    justifyContent: "center",
+    display: "flex",
+    alignItems: "center",
+    display: "flex",
+    textAlign: "center",
+    fontSize: 20,
+    backgroundColor: "#4a8f52",
+    padding: 15,
+  },
+
+  modalCellCorrectIphone: {
     // aspectRatio: 1,
     borderWidth: 2,
     margin: 3,
@@ -80,8 +123,24 @@ export default StyleSheet.create({
     padding: 3,
   },
 
-  modalCellInWord: {
+  modalCellInWordIpad: {
     // aspectRatio: 1,
+    borderWidth: 2,
+    margin: 3,
+    marginTop: 30,
+    borderColor: colors.darkgrey,
+    width: "15%",
+    justifyContent: "center",
+    alignItems: "center",
+    display: "flex",
+    textAlign: "center",
+    fontSize: 20,
+    padding: 15,
+
+    backgroundColor: "#e89736",
+  },
+
+  modalCellInWordIphone: {
     borderWidth: 2,
     margin: 3,
     marginTop: 10,
@@ -97,7 +156,24 @@ export default StyleSheet.create({
     backgroundColor: "#e89736",
   },
 
-  modalCellNotWord: {
+  modalCellNotWordIpad: {
+    // aspectRatio: 1,
+    borderWidth: 2,
+    margin: 3,
+    marginTop: 30,
+    borderColor: colors.darkgrey,
+    width: "15%",
+    justifyContent: "center",
+    alignItems: "center",
+    display: "flex",
+    textAlign: "center",
+    padding: 15,
+
+    fontSize: 20,
+    backgroundColor: "#818384",
+  },
+
+  modalCellNotWordIpone: {
     // aspectRatio: 1,
     borderWidth: 2,
     margin: 3,
@@ -114,12 +190,37 @@ export default StyleSheet.create({
     backgroundColor: "#818384",
   },
 
-  modalInfoLetter: {
+  modalInfoLetterIpad: {
+    fontSize: 25,
+    textAlign: "center",
+    marginTop: 4,
+  },
+
+  modalInfoLetterIphone: {
     fontSize: 15,
     textAlign: "center",
     marginTop: 4,
   },
-  modalView: {
+
+  modalViewIpad: {
+    // margin: 20,
+    height: "55%",
+    width: "80%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 4,
+    // elevation: 5,
+  },
+
+  modalViewIphone: {
     // margin: 20,
     height: "60%",
     width: "80%",
@@ -136,6 +237,7 @@ export default StyleSheet.create({
     // shadowRadius: 4,
     // elevation: 5,
   },
+
   button: {
     borderRadius: 20,
     padding: 10,
@@ -149,13 +251,27 @@ export default StyleSheet.create({
   buttonClose: {
     backgroundColor: "#4a8f52",
   },
-  textStyle: {
+
+  textStyleIpad: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 15,
+  },
+  modalTextIpad: {
+    marginTop: 60,
+    marginBottom: 25,
+    textAlign: "center",
+    fontSize: 25,
+  },
+
+  textStyleIpone: {
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
     fontSize: 10,
   },
-  modalText: {
+  modalTextIpone: {
     marginBottom: 15,
     textAlign: "center",
     fontSize: 20,

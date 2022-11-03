@@ -5,6 +5,11 @@ import Animated, { SlideInDown } from "react-native-reanimated";
 import { EventRegister } from "react-native-event-listeners";
 import themeContext from "../../config/themeContext";
 import { useState, useContext } from "react";
+
+import "@expo/match-media";
+
+import { useMediaQuery } from "react-responsive";
+
 const Keyboard = ({
   onKeyPressed = () => {},
   greenCaps = [],
@@ -32,6 +37,8 @@ const Keyboard = ({
 
   const [keyDown, setKeyDown] = useState("");
 
+  const isTablet = useMediaQuery({ query: "(min-width: 1300px)" });
+  const isMobile = useMediaQuery({ query: "(max-width: 1290px)" });
   return (
     <Animated.View
       entering={SlideInDown.duration(1300).springify().mass(0.5)}
@@ -46,7 +53,10 @@ const Keyboard = ({
               onTouchEnd={() => setKeyDown("")}
               key={key}
               style={[
-                [styles.key, { backgroundColor: theme.keyBackgroundColor }],
+                [
+                  isMobile ? styles.keyIphone : styles.key,
+                  { backgroundColor: theme.keyBackgroundColor },
+                ],
                 isLongButton(key) ? { width: keyWidth * 1.4 } : {},
                 {
                   // backgroundColor: getKeyBGColor(key),
@@ -57,7 +67,7 @@ const Keyboard = ({
             >
               <Text
                 style={[
-                  styles.keyText,
+                  isMobile ? styles.keyTextIphone : styles.keyText,
                   {
                     color: theme.keyLetterColor,
                   },

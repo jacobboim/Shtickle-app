@@ -18,6 +18,9 @@ import {
   Animated as AnimatedNative,
 } from "react-native";
 import * as Linking from "expo-linking";
+import "@expo/match-media";
+
+import { useMediaQuery } from "react-responsive";
 
 import { ThemeContext } from "../config/themeContext";
 import { colors, CLEAR, ENTER, colorsToEmoji } from "../constants";
@@ -26,6 +29,8 @@ import Keyboard from "../components/Keyboard";
 import useWordBank from "../components/useWordBank";
 import words from "../components/words";
 import { AntDesign } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
+
 import Toast from "react-native-toast-message";
 import { ICONS } from "../../assets";
 import styles from "../components/ShtickleGame.styles";
@@ -45,7 +50,7 @@ import themeContext from "../config/themeContext";
 
 //get random number between 0 and 100
 const getRandomNumber = () => {
-  return Math.floor(Math.random() * 107);
+  return Math.floor(Math.random() * 133);
 };
 
 const dayOfTheYear = getDayOfTheYear();
@@ -74,7 +79,11 @@ const Game = () => {
   const [newGamePressesed, setNewGamePressesed] = useState(false);
   const [emailPress, setEmailPress] = useState(false);
   const [emptyEmojiList, setEmptyEmojiList] = useState(null);
-
+  const [hintNumber, setHintNumber] = useState(2);
+  const [hintLetter, setHintLetter] = useState("");
+  const Ref = useRef(null);
+  const [timers, setTimers] = useState("00:00:00");
+  const [arrayOfIndexs, setArrayOfIndexs] = useState();
   const [rows, setRows] = useState(
     new Array(NUMBER_OF_TRIES).fill(new Array(0).fill(""))
   );
@@ -82,6 +91,11 @@ const Game = () => {
   const theme = useContext(themeContext);
 
   const translation = useRef(new AnimatedNative.Value(0)).current;
+
+  const wordsRef = useRef();
+
+  // const checkScreenSize = () => {
+  // };
   //reset game
   useEffect(() => {
     AnimatedNative.loop(
@@ -95,13 +109,17 @@ const Game = () => {
     ).start();
   }, [gameState, randomNum]);
 
+  // useEffect(() => {
+  //   checkScreenSize;
+  // }, [gameState]);
+
   useEffect(() => {
     // setRandomNum(getNewWord);
     const getNumPlzWord = getNewWord();
 
     console.log(getNumPlzWord, " dsfwr23");
 
-    const word = words[getNewWord()];
+    const word = words[getNumPlzWord];
     setWord(word);
     const emptyArray = [];
     emptyArray.push(word);
@@ -109,7 +127,7 @@ const Game = () => {
     const letters = word.split(""); // ["h", "e", "l", "l", "o"]
     setStateLetters(letters);
   }, [gameState, randomNum]);
-  console.log(currentWord, "current wossssrd");
+  // console.log(currentWord, "current wossssrd");
 
   useEffect(() => {
     if (curRow > 0) {
@@ -129,12 +147,68 @@ const Game = () => {
     readState();
   }, []);
 
+  useEffect(() => {
+    clearTimer(getDeadTime());
+  }, []);
+
+  // The state for our timer
+
+  const getTimeRemaining = (e) => {
+    const total = Date.parse(e) - Date.parse(new Date());
+    const seconds = Math.floor((total / 1000) % 60);
+    const minutes = Math.floor((total / 1000 / 60) % 60);
+    const hours = Math.floor((total / 1000 / 60 / 60) % 24);
+    return {
+      total,
+      hours,
+      minutes,
+      seconds,
+    };
+  };
+
+  const startTimers = (e) => {
+    let { total, hours, minutes, seconds } = getTimeRemaining(e);
+    if (total >= 0) {
+      setTimers(
+        (hours > 9 ? hours : "0" + hours) +
+          ":" +
+          (minutes > 9 ? minutes : "0" + minutes) +
+          ":" +
+          (seconds > 9 ? seconds : "0" + seconds)
+      );
+    }
+  };
+
+  const clearTimer = (e) => {
+    setTimers("00:00:60");
+
+    if (Ref.current) clearInterval(Ref.current);
+    const id = setInterval(() => {
+      startTimers(e);
+    }, 1000);
+    Ref.current = id;
+  };
+
+  const getDeadTime = () => {
+    let deadline = new Date();
+
+    // This is where you need to adjust if
+    // you entend to add more time
+    deadline.setSeconds(deadline.getSeconds() + 60);
+    return deadline;
+  };
+
+  const checkRowLengthForHinter = () => {
+    return stateLetters.length;
+  };
+
   const resetGame = () => {
     setNewGamePressesed(true);
     setGameState("playing");
     setCurRow(0);
     setCurCol(0);
     setHistory([]);
+    setHintNumber(2);
 
     // setRandomNum(getNewWord);
     setRows(
@@ -147,7 +221,15 @@ const Game = () => {
     setGameState("playing");
   };
 
-  console.log(stateLetters, "stateLetters");
+  const consoleLogs = () => {
+    console.log(stateLetters, "stateLetters");
+    // console.log(rows, "rows");
+
+    console.log(hintNumber, "hintNumber");
+  };
+
+  const isTablet = useMediaQuery({ query: "(min-width: 1300px)" });
+  const isMobile = useMediaQuery({ query: "(max-width: 1290px)" });
 
   const persistState = async () => {
     const dataForToday = {
@@ -325,7 +407,7 @@ const Game = () => {
   const yellowCaps = getAllLettersWithColor(theme.secondary);
   const greyCaps = getAllLettersWithColor(theme.darkgrey);
   const getCellStyle = (i, j) => [
-    styles.cell,
+    isMobile ? styles.cellIPhone : styles.cellIpad,
     {
       borderColor: isCellActive(i, j) ? theme.lightgrey : theme.darkgrey,
       backgroundColor: getCellBGColor(i, j),
@@ -356,6 +438,16 @@ const Game = () => {
     });
   };
 
+  const timerDone = () => {
+    Toast.show({
+      type: "error",
+      text1: `Only 2 hints per game`,
+      // text2: `while the timer resets`,
+      visibilityTime: 2000,
+      topOffset: 150,
+    });
+  };
+
   const showToastAlreadyUsed = () => {
     Toast.show({
       type: "success",
@@ -381,66 +473,216 @@ const Game = () => {
     );
   }
 
+  function lowerHint() {
+    if (hintNumber > 0) {
+      setHintNumber((prevHint) => prevHint - 1);
+    } else {
+      return null;
+    }
+  }
+
+  const emptyArray = [];
+
+  const findGreenKeys = () => {
+    rows.map((row, i) => {
+      row.map((letter, j) => {
+        getCellStyle(i, j).forEach((x) => {
+          const arrayOfIndices = [];
+
+          if (x.backgroundColor === "#4a8f52") {
+            emptyArray.push(j);
+          }
+        });
+      });
+    });
+  };
+
+  function removeDuplicates(arr) {
+    var counts = {};
+    for (var i = 0; i < arr.length; i++) {
+      var item = arr[i];
+      counts[item] = (counts[item] || 0) + 1;
+    }
+    var arr = [];
+    for (item in counts) {
+      if (counts[item] === 1) {
+        arr.push(item);
+      }
+    }
+    return arr;
+  }
+
+  const handleHint = () => {
+    lowerHint();
+    findGreenKeys();
+    const numberList6Letter = [0, 1, 2, 3, 4, 5];
+    const numberList5Letter = [0, 1, 2, 3, 4];
+
+    function wordLengthSize() {
+      if (stateLetters.length === 5) {
+        return numberList5Letter;
+      } else {
+        return numberList6Letter;
+      }
+    }
+
+    const concat = emptyArray.concat(wordLengthSize());
+    const remove = removeDuplicates(concat);
+
+    console.log(concat, "im concat");
+
+    console.log(remove, "im remove");
+
+    // console.log(emptyArray, "im the emtpy array testing");
+    if (hintNumber !== 0) {
+      const updatedRows = copyArray(rows);
+
+      const item = remove[Math.floor(Math.random() * remove.length)];
+
+      console.log(item, " im item ... should be an integer");
+      const randomNumberForIndex = item;
+
+      const words = stateLetters[randomNumberForIndex];
+
+      console.log(words, "im the word");
+
+      const findIndex = stateLetters.indexOf(words);
+
+      console.log(findIndex, "index of out letter");
+
+      if (curCol < rows[0].length) {
+        updatedRows[curRow][item] = words;
+        setRows(updatedRows);
+      }
+      consoleLogs();
+    } else if (hintNumber === 0) {
+      timerDone();
+    }
+  };
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.backgroundColor }]}
     >
       <StatusBar style="light" />
-      <View
-        style={{
-          display: "flex",
-          justifyContent: "space-evenly",
-          alignItems: "center",
-          flexDirection: "row",
-          width: "100%",
-        }}
-      >
-        <AntDesign
-          name="infocirlceo"
-          size={32}
-          color={theme.info}
-          onPress={() => setModalVisible(true)}
-        />
-        <Image
-          source={ICONS.shticklePng}
-          style={{
-            width: "50%",
-            height: "87%",
-            marginBottom: 3,
-            marginTop: 10,
-          }}
-        />
 
-        <Pressable
-          onPress={() => {
-            setMode(!mode);
-            EventRegister.emit("changeTheme", mode);
+      {isTablet && (
+        <View
+          style={{
+            display: "flex",
+            justifyContent: "space-evenly",
+            alignItems: "center",
+            flexDirection: "row",
+            width: "100%",
+            marginTop: "5%",
           }}
         >
-          <AnimatedNative.View
-            style={[
-              styles.title,
-              {
-                color: theme.title,
-                transform: [
-                  // { translateX: translation },
-                  {
-                    rotate: translation.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: ["0deg", "360deg"],
-                    }),
-                  },
-                ],
-              },
-            ]}
+          <AntDesign
+            name="infocirlceo"
+            size={48}
+            color={theme.info}
+            onPress={() => setModalVisible(true)}
+          />
+          <Image
+            source={ICONS.shticklePng}
+            style={{
+              // width: "50%",
+              // height: "100%",
+              marginBottom: 3,
+              marginTop: 10,
+            }}
+          />
+
+          <Pressable
+            onPress={() => {
+              setMode(!mode);
+              EventRegister.emit("changeTheme", mode);
+            }}
           >
-            <Image
-              style={{ width: 40, height: 40 }}
-              source={mode === true ? ICONS.blackSun : ICONS.whiteSun}
-            />
-          </AnimatedNative.View>
-        </Pressable>
-      </View>
+            <AnimatedNative.View
+              style={[
+                styles.title,
+                {
+                  color: theme.title,
+                  transform: [
+                    // { translateX: translation },
+                    {
+                      rotate: translation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ["0deg", "360deg"],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            >
+              <Image
+                style={{ width: 50, height: 50 }}
+                source={mode === true ? ICONS.blackSun : ICONS.whiteSun}
+              />
+            </AnimatedNative.View>
+          </Pressable>
+        </View>
+      )}
+
+      {isMobile && (
+        <View
+          style={{
+            display: "flex",
+            justifyContent: "space-evenly",
+            alignItems: "center",
+            flexDirection: "row",
+            width: "100%",
+          }}
+        >
+          <AntDesign
+            name="infocirlceo"
+            size={32}
+            color={theme.info}
+            onPress={() => setModalVisible(true)}
+          />
+          <Image
+            source={ICONS.shticklePng}
+            style={{
+              width: "50%",
+              height: "87%",
+              marginBottom: 3,
+              marginTop: 10,
+            }}
+          />
+
+          <Pressable
+            onPress={() => {
+              setMode(!mode);
+              EventRegister.emit("changeTheme", mode);
+            }}
+          >
+            <AnimatedNative.View
+              style={[
+                styles.title,
+                {
+                  color: theme.title,
+                  transform: [
+                    // { translateX: translation },
+                    {
+                      rotate: translation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ["0deg", "360deg"],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            >
+              <Image
+                style={{ width: 40, height: 40 }}
+                source={mode === true ? ICONS.blackSun : ICONS.whiteSun}
+              />
+            </AnimatedNative.View>
+          </Pressable>
+        </View>
+      )}
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -455,9 +697,17 @@ const Game = () => {
           onPress={() => setModalVisible(!modalVisible)}
         >
           <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>HOW TO PLAY</Text>
-              <Text style={{ textAlign: "center", fontSize: 15 }}>
+            <View
+              style={isMobile ? styles.modalViewIphone : styles.modalViewIpad}
+            >
+              <Text
+                style={isMobile ? styles.modalTextIpone : styles.modalTextIpad}
+              >
+                HOW TO PLAY
+              </Text>
+              <Text
+                style={{ textAlign: "center", fontSize: isMobile ? 15 : 25 }}
+              >
                 Guess the <Text style={{ fontWeight: "bold" }}>SHTICKLE</Text>{" "}
                 in 6 tries. After each guess, the color of the tiles will change
                 to show how close your guess was to the word.
@@ -470,14 +720,58 @@ const Game = () => {
                   flexDirection: "row",
                 }}
               >
-                <Text style={styles.modalCellCorrect}>S</Text>
-                <Text style={styles.modalCell}>H</Text>
-                <Text style={styles.modalCell}>T</Text>
-                <Text style={styles.modalCell}>I</Text>
-                <Text style={styles.modalCell}>C</Text>
-                <Text style={styles.modalCell}>K</Text>
+                <Text
+                  style={
+                    isMobile
+                      ? styles.modalCellCorrectIphone
+                      : styles.modalCellCorrectIpad
+                  }
+                >
+                  S
+                </Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  H
+                </Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  T
+                </Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  I
+                </Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  C
+                </Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  K
+                </Text>
               </View>
-              <Text style={styles.modalInfoLetter}>
+              <Text
+                style={
+                  isMobile
+                    ? styles.modalInfoLetterIphone
+                    : styles.modalInfoLetterIpad
+                }
+              >
                 The letter S is in the word and in the correct spot.
               </Text>
               <View
@@ -488,12 +782,50 @@ const Game = () => {
                   flexDirection: "row",
                 }}
               >
-                <Text style={styles.modalCell}>S</Text>
-                <Text style={styles.modalCell}>I</Text>
-                <Text style={styles.modalCell}>M</Text>
-                <Text style={styles.modalCell}>C</Text>
-                <Text style={styles.modalCellInWord}>H</Text>
-                <Text style={styles.modalCell}>A</Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  S
+                </Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  I
+                </Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  M
+                </Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  C
+                </Text>
+                <Text
+                  style={
+                    isMobile
+                      ? styles.modalCellInWordIphone
+                      : styles.modalCellInWordIpad
+                  }
+                >
+                  H
+                </Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  A
+                </Text>
               </View>
               <Text style={styles.modalInfoLetter}>
                 The letter H is in the word but in the wrong spot.
@@ -506,14 +838,58 @@ const Game = () => {
                   flexDirection: "row",
                 }}
               >
-                <Text style={styles.modalCell}>M</Text>
-                <Text style={styles.modalCell}>I</Text>
-                <Text style={styles.modalCellNotWord}>K</Text>
-                <Text style={styles.modalCell}>V</Text>
-                <Text style={styles.modalCell}>A</Text>
-                <Text style={styles.modalCell}>H</Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  M
+                </Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  I
+                </Text>
+                <Text
+                  style={
+                    isMobile
+                      ? styles.modalCellNotWordIpone
+                      : styles.modalCellNotWordIpad
+                  }
+                >
+                  K
+                </Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  V
+                </Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  A
+                </Text>
+                <Text
+                  style={
+                    isMobile ? styles.modalCellIpone : styles.modalCellIpad
+                  }
+                >
+                  H
+                </Text>
               </View>
-              <Text style={styles.modalInfoLetter}>
+              <Text
+                style={
+                  isMobile
+                    ? styles.modalInfoLetterIphone
+                    : styles.modalInfoLetterIpad
+                }
+              >
                 The letter K is not in the word.
               </Text>
 
@@ -545,10 +921,15 @@ const Game = () => {
                   })
                 }
               >
-                <Text>
+                <Text
+                  style={{
+                    fontSize: isMobile ? 15 : 25,
+                  }}
+                >
                   Contact Developer:{" "}
                   <Text
                     style={{
+                      fontSize: isMobile ? 15 : 25,
                       textDecorationLine: "underline",
                       backgroundColor: emailPress ? "darkgray" : "white",
                     }}
@@ -558,31 +939,17 @@ const Game = () => {
                 </Text>
               </Pressable>
 
-              {/* <Pressable
-                onTouchStart={() => setOurWebsite(!ourWebsite)}
-                onTouchEnd={() => setOurWebsite(false)}
-                style={{
-                  marginTop: 20,
-                  backgroundColor: ourWebsite ? "darkgray" : "lightgray",
-
-                  borderRadius: 18,
-                  padding: 9,
-                }}
-                onPress={() =>
-                  Linking.openURL(
-                    "https://shtickle-wordle-clone.netlify.app/"
-                  ).catch((error) => {
-                    console.log(error);
-                  })
-                }
-              >
-                <Text>Our Website</Text>
-              </Pressable> */}
               <Pressable
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => setModalVisible(!modalVisible)}
               >
-                <Text style={styles.textStyle}>Hide</Text>
+                <Text
+                  style={
+                    isMobile ? styles.textStyleIpone : styles.textStyleIpad
+                  }
+                >
+                  Hide
+                </Text>
               </Pressable>
             </View>
           </View>
@@ -605,7 +972,7 @@ const Game = () => {
               flexDirection: "row",
               height: 65,
               width: "50%",
-              marginTop: "70%",
+              marginTop: "50%",
             }}
           >
             <Text
@@ -671,6 +1038,41 @@ const Game = () => {
               </Animated.View>
             ))}
           </ScrollView>
+
+          <Animated.View
+            entering={SlideInLeft.delay(90)}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "row",
+              width: "100%",
+            }}
+          >
+            <Pressable
+              onPress={handleHint}
+              style={{
+                backgroundColor: hintNumber !== 0 ? "#0064f0" : "#24335D",
+                display: "flex",
+                borderRadius: 20,
+                alignItems: "center",
+                justifyContent: "center",
+                height: 25,
+                width: 100,
+                marginTop: 10,
+                marginBottom: 8,
+              }}
+            >
+              <Entypo
+                name="magnifying-glass"
+                size={29}
+                style={{
+                  color: hintNumber !== 0 ? "white" : "#4B68B8",
+                }}
+              />
+            </Pressable>
+          </Animated.View>
+
           <View style={{ marginBottom: 45 }}>
             <Keyboard
               onKeyPressed={onKeyPressed}

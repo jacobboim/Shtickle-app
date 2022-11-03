@@ -16,7 +16,9 @@ import Animated, { SlideInDown, SlideInLeft } from "react-native-reanimated";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
+import "@expo/match-media";
 
+import { useMediaQuery } from "react-responsive";
 const Number = ({ number, label }) => (
   <View style={styles.numberCnt}>
     <Text style={styles.topText}>{number}</Text>
@@ -247,10 +249,6 @@ const EndScreens = ({
     setDistribution(dist);
   };
 
-  //new timer
-  // We need ref in this, because we are dealing
-  // with JS setInterval to keep track of it and
-  // stop it when needed
   const Ref = useRef(null);
 
   // The state for our timer
@@ -272,9 +270,6 @@ const EndScreens = ({
   const startTimers = (e) => {
     let { total, hours, minutes, seconds } = getTimeRemaining(e);
     if (total >= 0) {
-      // update the timer
-      // check if less than 10 then we need to
-      // add '0' at the beginning of the variable
       setTimers(
         (hours > 9 ? hours : "0" + hours) +
           ":" +
@@ -286,14 +281,8 @@ const EndScreens = ({
   };
 
   const clearTimer = (e) => {
-    // If you adjust it you should also need to
-    // adjust the Endtime formula we are about
-    // to code next
     setTimers("00:00:60");
 
-    // If you try to remove this line the
-    // updating of timer Variable will be
-    // after 1000ms or 1sec
     if (Ref.current) clearInterval(Ref.current);
     const id = setInterval(() => {
       startTimers(e);
@@ -310,11 +299,6 @@ const EndScreens = ({
     return deadline;
   };
 
-  // We can use useEffect so that when the component
-  // mount the timer will start as soon as possible
-
-  // We put empty array to act as componentDid
-  // mount only
   useEffect(() => {
     clearTimer(getDeadTime());
   }, []);
@@ -331,19 +315,6 @@ const EndScreens = ({
     if (timers === "00:00:00") {
       onRestart();
     } else if (timers !== "00:00:00") {
-      // Alert.alert(
-      //   "Please wait",
-      //   "for the timer to reset",
-      //   [
-      //     {
-      //       text: "Cancel",
-      //       onPress: () => console.log("Cancel Pressed"),
-      //       style: "cancel",
-      //     },
-      //     // { text: "OK", onPress: () => changeGameState("playing") },
-      //   ],
-      //   { cancelable: false }
-      // );
       timerDone();
     }
   };
@@ -369,13 +340,15 @@ const EndScreens = ({
   };
 
   // console.log(lastWord, "last word is here:     ");
+  const isMobile = useMediaQuery({ query: "(max-width: 1290px)" });
 
   return (
     <SafeAreaView style={styles.container}>
       <Animated.Text
         entering={SlideInLeft.delay(150).springify().mass(0.5)}
         style={[
-          styles.title,
+          isMobile ? styles.titleIphone : styles.titleIpad,
+          ,
           { color: won ? "green" : "red", fontWeight: won ? "bold" : "300" },
         ]}
       >
@@ -530,7 +503,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
   },
-  title: {
+  titleIpad: {
+    fontSize: 40,
+    color: "white",
+    textAlign: "center",
+    marginVertical: 90,
+  },
+
+  titleIphone: {
     fontSize: 40,
     color: "white",
     textAlign: "center",
